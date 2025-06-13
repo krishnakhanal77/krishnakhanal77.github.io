@@ -1,9 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Text, Box, Sphere } from "@react-three/drei";
+import { Box, Float, Sphere, Text } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import { gsap } from "gsap";
-import * as THREE from "three";
 import { ExternalLink, Github } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
+import * as THREE from "three";
 
 interface Project {
   id: number;
@@ -17,84 +18,73 @@ interface Project {
 
 const projects: Project[] = [
   {
-    id: 1,
-    title: "E-Commerce Platform",
-    description:
-      "Modern e-commerce solution with React, Node.js, and Stripe integration",
-    tech: ["React", "Node.js", "MongoDB", "Stripe"],
-    color: "#00D9FF",
-    demo: "https://demo.example.com",
-    github: "https://github.com/krishnakhanal",
-  },
-  {
     id: 2,
-    title: "3D Portfolio Website",
+    title: "RxPIN",
     description:
-      "Interactive portfolio showcasing Three.js capabilities and modern web design",
-    tech: ["Three.js", "React", "GSAP", "WebGL"],
+      "Built and maintained RxPIN, a SaaS-based therapy management system designed to streamline record-keeping and overall operations for therapists and clients, primarily focused on autism care.",
+    tech: ["Next Js", "React", "Tailwind", "TypeScript", "Tanstack Query"],
     color: "#FF6B35",
-    demo: "https://portfolio.example.com",
-    github: "https://github.com/krishnakhanal",
+    demo: "https://aerawat.com",
+    github: "#",
   },
   {
     id: 3,
-    title: "Task Management App",
+    title: "Baywater Mobile - Field-Service App",
     description:
-      "Collaborative task management with real-time updates and team features",
-    tech: ["React", "Firebase", "TypeScript", "Tailwind"],
+      "Developed the Baywater Healthcare mobile app with real-time support, offline capability, push notifications, and Google Maps integration for enhanced healthcare delivery ",
+    tech: ["React Native", "Tailwind", "SQLite", "TypeORM", "TypeScript"],
     color: "#10B981",
-    demo: "https://tasks.example.com",
-    github: "https://github.com/krishnakhanal",
+    demo: "https://baywater.co.uk/",
+    github: "#",
   },
   {
     id: 4,
-    title: "Task Management App",
+    title: "Hawkins (Inventory Management System)",
     description:
-      "Collaborative task management with real-time updates and team features",
-    tech: ["React", "Firebase", "TypeScript", "Tailwind"],
+      "A web application for inventory management built with React, enabling efficient tracking and management of stock levels with a user-friendly interface.",
+    tech: ["React", "React Query", "Tailwind"],
     color: "#10B981",
-    demo: "https://tasks.example.com",
-    github: "https://github.com/krishnakhanal",
+    demo: "#",
+    github: "#",
   },
   {
     id: 5,
-    title: "Task Management App",
+    title: "PM Tool (Project Management Tool)",
     description:
-      "Collaborative task management with real-time updates and team features",
-    tech: ["React", "Firebase", "TypeScript", "Tailwind"],
+      "A project management tool built with React, enabling efficient task management and resource allocation with a user-friendly interface.",
+    tech: ["React", "React Query", "Tailwind"],
     color: "#10B981",
-    demo: "https://tasks.example.com",
-    github: "https://github.com/krishnakhanal",
+    demo: "#",
+    github: "#",
   },
   {
     id: 6,
-    title: "Task Management App",
+    title: "Warehouse Management System",
     description:
-      "Collaborative task management with real-time updates and team features",
-    tech: ["React", "Firebase", "TypeScript", "Tailwind"],
+      "Mobile application for warehouse management built with React Native",
+    tech: ["React Native", "Expo", "Tailwind", "TypeScript"],
     color: "#10B981",
-    demo: "https://tasks.example.com",
-    github: "https://github.com/krishnakhanal",
+    demo: "#",
+    github: "#",
   },
   {
     id: 7,
-    title: "Task Management App",
+    title: "Victim Support Scotland (VSS)",
     description:
-      "Collaborative task management with real-time updates and team features",
-    tech: ["React", "Firebase", "TypeScript", "Tailwind"],
+      "A whole system for a charity organization that provides support to victims of domestic violence and abuse",
+    tech: ["React", "React Query", "Tailwind"],
     color: "#10B981",
-    demo: "https://tasks.example.com",
-    github: "https://github.com/krishnakhanal",
+    demo: "https://victimsupport.scot/",
+    github: "#",
   },
   {
     id: 8,
-    title: "Task Management App",
-    description:
-      "Collaborative task management with real-time updates and team features",
-    tech: ["React", "Firebase", "TypeScript", "Tailwind"],
+    title: "Nepal Press Khabar",
+    description: "News portal website built with React, Node.js, and MongoDB",
+    tech: ["React", "Node.js", "MongoDB"],
     color: "#10B981",
-    demo: "https://tasks.example.com",
-    github: "https://github.com/krishnakhanal",
+    demo: "https://nepalpresskhabar.com/",
+    github: "#",
   },
 ];
 
@@ -191,6 +181,9 @@ interface ProjectsSectionProps {
 const ProjectsSection: React.FC<ProjectsSectionProps> = ({ show3D }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+  const [isHoveringCard, setIsHoveringCard] = useState(false);
+  const lastProjectRef = useRef<Project | null>(null);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -202,12 +195,93 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ show3D }) => {
     }
   }, []);
 
+  // Save the last hovered project
+  useEffect(() => {
+    if (hoveredProject) {
+      lastProjectRef.current = hoveredProject;
+    }
+  }, [hoveredProject]);
+
+  const handleMouseEnter = (project: Project, event: React.MouseEvent) => {
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    setHoverPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top - 10,
+    });
+    setHoveredProject(project);
+  };
+
+  // Render hover card using portal
+  const renderHoverCard = () => {
+    // Use either the currently hovered project or the last one when hovering the card
+    const displayProject =
+      hoveredProject || (isHoveringCard ? lastProjectRef.current : null);
+
+    if (!displayProject) return null;
+
+    return ReactDOM.createPortal(
+      <div
+        className="fixed bg-gray-800 rounded-lg p-4 md:p-6 border border-gray-700 shadow-xl z-[9999] w-[300px] sm:w-[550px]"
+        style={{
+          left: `${hoverPosition.x}px`,
+          top: `${hoverPosition.y}px`,
+          transform: "translate(-50%, -100%)",
+        }}
+        onMouseEnter={() => setIsHoveringCard(true)}
+        onMouseLeave={() => setIsHoveringCard(false)}
+      >
+        <div className="space-y-4">
+          <h3
+            className="text-xl md:text-2xl font-bold text-white mb-3"
+            style={{ color: displayProject.color }}
+          >
+            {displayProject.title}
+          </h3>
+          <p className="text-gray-300 mb-4">{displayProject.description}</p>
+
+          <div className="flex flex-wrap gap-2 mb-6">
+            {displayProject.tech.map((tech) => (
+              <span
+                key={tech}
+                className="px-2 md:px-3 py-1 bg-gray-700 text-white rounded-full text-xs md:text-sm"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-4">
+            <a
+              href={displayProject.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors text-sm md:text-base"
+            >
+              <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
+              Live Demo
+            </a>
+            <a
+              href={displayProject.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm md:text-base"
+            >
+              <Github className="w-4 h-4 md:w-5 md:h-5" />
+              View Code
+            </a>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
   return (
     <div
       ref={containerRef}
       className="w-full min-h-screen pt-20 md:pt-32 px-4 md:px-8"
     >
-      <div className="max-w-7xl mx-auto h-full">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
             Featured Projects
@@ -220,8 +294,8 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ show3D }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* 3D Projects Visualization - Only show on larger screens */}
           {show3D && (
-            <div className="hidden lg:block lg:sticky lg:top-24 h-[800px]">
-              <div className="w-full h-full">
+            <div className="">
+              {/* <div className="w-full h-full">
                 <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
                   <ambientLight intensity={0.4} />
                   <pointLight
@@ -234,90 +308,45 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ show3D }) => {
                     intensity={0.4}
                     color="#FF6B35"
                   />
-                  {/* Temporarily commenting out 3D visualization until component is ready */}
-                  {/* <ProjectsVisualization
+                  Temporarily commenting out 3D visualization until component is ready
+                  <ProjectsVisualization
                     projects={projects}
                     onHover={setHoveredProject}
-                  /> */}
+                  />
                 </Canvas>
-              </div>
+              </div> */}
             </div>
           )}
 
           {/* Projects List */}
-          <div className="flex flex-col space-y-6 pb-12">
+          <div className="">
             <div
-              className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-xl"
-              onMouseLeave={() => setHoveredProject(null)}
+              className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-xl overflow-visible"
+              onMouseLeave={() => {
+                if (!isHoveringCard) {
+                  setHoveredProject(null);
+                }
+              }}
             >
-              {hoveredProject ? (
-                <div className="space-y-4">
-                  <h3
-                    className="text-xl md:text-2xl font-bold text-white mb-3"
-                    style={{ color: hoveredProject.color }}
-                  >
-                    {hoveredProject.title}
-                  </h3>
-                  <p className="text-gray-300 mb-4">
-                    {hoveredProject.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {hoveredProject.tech.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-2 md:px-3 py-1 bg-gray-700 text-white rounded-full text-xs md:text-sm"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex flex-wrap gap-4">
-                    <a
-                      href={hoveredProject.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors text-sm md:text-base"
-                    >
-                      <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
-                      Live Demo
-                    </a>
-                    <a
-                      href={hoveredProject.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm md:text-base"
-                    >
-                      <Github className="w-4 h-4 md:w-5 md:h-5" />
-                      View Code
-                    </a>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <p className="text-gray-300">
-                    Click or hover over a project to see more details
-                  </p>
-                </div>
-              )}
-
               {/* All Projects List */}
-              <div className="space-y-4 mt-8 pt-8 border-t border-gray-700">
-                <h3 className="text-lg md:text-xl font-semibold text-white sticky top-0 bg-gray-900 pb-4">
+              <div className="space-y-4">
+                <h3 className="text-lg md:text-xl font-semibold text-white top-0 bg-gray-900 pb-4">
                   All Projects
                 </h3>
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                <div
+                  className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 relative overflow-visible"
+                  style={{ clipPath: "inset(0 0 0 0)", paddingBottom: "100px" }}
+                >
                   {projects.map((project) => (
                     <div
                       key={project.id}
-                      className={`bg-gray-800 rounded-lg p-3 md:p-4 border transition-colors cursor-pointer ${
+                      className={`relative bg-gray-800 rounded-lg p-3 md:p-4 border transition-colors cursor-pointer group overflow-visible ${
                         hoveredProject?.id === project.id
                           ? "border-cyan-400"
                           : "border-gray-700 hover:border-cyan-400"
                       }`}
-                      onMouseEnter={() => setHoveredProject(project)}
-                      onClick={() => setHoveredProject(project)}
+                      onMouseEnter={(e) => handleMouseEnter(project, e)}
+                      onClick={(e) => handleMouseEnter(project, e)}
                     >
                       <h4 className="font-semibold text-white">
                         {project.title}
@@ -333,6 +362,9 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ show3D }) => {
           </div>
         </div>
       </div>
+
+      {/* Render hover card using portal */}
+      {renderHoverCard()}
     </div>
   );
 };

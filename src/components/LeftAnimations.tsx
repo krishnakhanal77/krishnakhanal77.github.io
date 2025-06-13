@@ -1,7 +1,7 @@
-import React, { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Float, Sphere, Box, Torus, Octahedron } from '@react-three/drei';
-import * as THREE from 'three';
+import React, { useRef, useMemo } from "react";
+import { useFrame } from "@react-three/fiber";
+import { Float, Sphere, Box, Torus, Octahedron } from "@react-three/drei";
+import * as THREE from "three";
 
 const LeftAnimations: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
@@ -9,27 +9,31 @@ const LeftAnimations: React.FC = () => {
   const orbitRef = useRef<THREE.Group>(null);
 
   // Generate spiral animation elements
-  const spiralElements = useMemo(() => 
-    Array.from({ length: 20 }, (_, i) => ({
-      id: i,
-      angle: (i / 20) * Math.PI * 4,
-      radius: 2 + i * 0.3,
-      height: i * 0.5 - 5,
-      color: i % 3 === 0 ? "#00D9FF" : i % 3 === 1 ? "#FF6B35" : "#10B981",
-      scale: 0.1 + (i % 5) * 0.02
-    })), []
+  const spiralElements = useMemo(
+    () =>
+      Array.from({ length: 20 }, (_, i) => ({
+        id: i,
+        angle: (i / 20) * Math.PI * 4,
+        radius: 2 + i * 0.3,
+        height: i * 0.5 - 5,
+        color: i % 3 === 0 ? "#00D9FF" : i % 3 === 1 ? "#FF6B35" : "#10B981",
+        scale: 0.1 + (i % 5) * 0.02,
+      })),
+    []
   );
 
   // Generate orbiting elements
-  const orbitElements = useMemo(() => 
-    Array.from({ length: 8 }, (_, i) => ({
-      id: i,
-      radius: 3 + i * 0.8,
-      speed: 0.5 + i * 0.1,
-      color: ["#00D9FF", "#FF6B35", "#10B981", "#8B5CF6"][i % 4],
-      scale: 0.15 + Math.random() * 0.1,
-      offset: (i / 8) * Math.PI * 2
-    })), []
+  const orbitElements = useMemo(
+    () =>
+      Array.from({ length: 8 }, (_, i) => ({
+        id: i,
+        radius: 3 + i * 0.8,
+        speed: 0.5 + i * 0.1,
+        color: ["#00D9FF", "#FF6B35", "#10B981", "#8B5CF6"][i % 4],
+        scale: 0.15 + Math.random() * 0.1,
+        offset: (i / 8) * Math.PI * 2,
+      })),
+    []
   );
 
   useFrame((state) => {
@@ -47,8 +51,10 @@ const LeftAnimations: React.FC = () => {
       spiralRef.current.children.forEach((child, i) => {
         const element = spiralElements[i];
         const animatedRadius = element.radius + Math.sin(time + i) * 0.2;
-        child.position.x = Math.cos(element.angle + time * 0.2) * animatedRadius;
-        child.position.z = Math.sin(element.angle + time * 0.2) * animatedRadius;
+        child.position.x =
+          Math.cos(element.angle + time * 0.2) * animatedRadius;
+        child.position.z =
+          Math.sin(element.angle + time * 0.2) * animatedRadius;
         child.position.y = element.height + Math.sin(time * 2 + i) * 0.3;
       });
     }
@@ -104,7 +110,10 @@ const LeftAnimations: React.FC = () => {
                 />
               </Octahedron>
             ) : (
-              <Torus args={[element.scale * 2, element.scale * 0.5, 8, 16]} scale={0.5}>
+              <Torus
+                args={[element.scale * 2, element.scale * 0.5, 8, 16]}
+                scale={0.5}
+              >
                 <meshStandardMaterial
                   color={element.color}
                   emissive={element.color}
@@ -147,7 +156,7 @@ const LeftAnimations: React.FC = () => {
               opacity={0.9}
             />
           </Sphere>
-          
+
           {/* Outer glow rings */}
           {[1, 1.5, 2].map((scale, i) => (
             <Torus key={i} args={[scale * 0.4, 0.02, 8, 32]} scale={scale}>
@@ -165,12 +174,16 @@ const LeftAnimations: React.FC = () => {
 
       {/* Floating Energy Particles */}
       {Array.from({ length: 15 }).map((_, i) => (
-        <Float key={`particle-${i}`} speed={1 + Math.random()} rotationIntensity={0.1}>
+        <Float
+          key={`particle-${i}`}
+          speed={1 + Math.random()}
+          rotationIntensity={0.1}
+        >
           <Sphere
             position={[
               (Math.random() - 0.5) * 12,
               (Math.random() - 0.5) * 8,
-              (Math.random() - 0.5) * 6
+              (Math.random() - 0.5) * 6,
             ]}
             scale={0.03 + Math.random() * 0.02}
           >

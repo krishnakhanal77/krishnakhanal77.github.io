@@ -1,7 +1,7 @@
-import React, { useRef, useMemo, useCallback } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { Float, Sphere, Points, PointMaterial } from '@react-three/drei';
-import * as THREE from 'three';
+import React, { useRef, useMemo, useCallback } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { Float, Sphere, Points, PointMaterial } from "@react-three/drei";
+import * as THREE from "three";
 
 const Background3D: React.FC = () => {
   const particlesRef = useRef<THREE.Group>(null);
@@ -14,13 +14,13 @@ const Background3D: React.FC = () => {
   const handleMouseMove = useCallback((event: MouseEvent) => {
     mousePosition.current = {
       x: (event.clientX / window.innerWidth) * 2 - 1,
-      y: -(event.clientY / window.innerHeight) * 2 + 1
+      y: -(event.clientY / window.innerHeight) * 2 + 1,
     };
   }, []);
 
   React.useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [handleMouseMove]);
 
   // Generate twinkling stars
@@ -62,9 +62,9 @@ const Background3D: React.FC = () => {
     }
 
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
 
     return geometry;
   }, []);
@@ -89,26 +89,33 @@ const Background3D: React.FC = () => {
     }
 
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
 
     return geometry;
   }, []);
 
   // Floating particles for depth
-  const particles = useMemo(() => 
-    Array.from({ length: 50 }, (_, i) => ({
-      id: i,
-      position: [
-        (Math.random() - 0.5) * 80,
-        (Math.random() - 0.5) * 80,
-        (Math.random() - 0.5) * 80
-      ] as [number, number, number],
-      scale: 0.02 + Math.random() * 0.04,
-      color: Math.random() > 0.7 ? "#00D9FF" : Math.random() > 0.5 ? "#FF6B35" : "#4A5568",
-      speed: 0.5 + Math.random() * 1.5
-    })), []
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 50 }, (_, i) => ({
+        id: i,
+        position: [
+          (Math.random() - 0.5) * 80,
+          (Math.random() - 0.5) * 80,
+          (Math.random() - 0.5) * 80,
+        ] as [number, number, number],
+        scale: 0.02 + Math.random() * 0.04,
+        color:
+          Math.random() > 0.7
+            ? "#00D9FF"
+            : Math.random() > 0.5
+            ? "#FF6B35"
+            : "#4A5568",
+        speed: 0.5 + Math.random() * 1.5,
+      })),
+    []
   );
 
   useFrame((state) => {
@@ -122,13 +129,17 @@ const Background3D: React.FC = () => {
 
     // Animate twinkling stars
     if (starsRef.current) {
-      const positions = starsRef.current.geometry.attributes.position.array as Float32Array;
-      const sizes = starsRef.current.geometry.attributes.size.array as Float32Array;
+      const positions = starsRef.current.geometry.attributes.position
+        .array as Float32Array;
+      const sizes = starsRef.current.geometry.attributes.size
+        .array as Float32Array;
 
       for (let i = 0; i < positions.length / 3; i++) {
         // Gentle rotation
         const angle = time * 0.001 + i * 0.01;
-        const radius = Math.sqrt(positions[i * 3] ** 2 + positions[i * 3 + 2] ** 2);
+        const radius = Math.sqrt(
+          positions[i * 3] ** 2 + positions[i * 3 + 2] ** 2
+        );
         positions[i * 3] = radius * Math.cos(angle);
         positions[i * 3 + 2] = radius * Math.sin(angle);
 
@@ -142,26 +153,27 @@ const Background3D: React.FC = () => {
 
     // Mouse-following stars
     if (mouseStarsRef.current) {
-      const positions = mouseStarsRef.current.geometry.attributes.position.array as Float32Array;
+      const positions = mouseStarsRef.current.geometry.attributes.position
+        .array as Float32Array;
       const targetX = mousePosition.current.x * viewport.width * 0.5;
       const targetY = mousePosition.current.y * viewport.height * 0.5;
 
       for (let i = 0; i < positions.length / 3; i++) {
         // Move towards mouse position with some randomness
-        const offsetX = (Math.sin(time + i) * 2);
-        const offsetY = (Math.cos(time + i * 1.5) * 2);
-        
+        const offsetX = Math.sin(time + i) * 2;
+        const offsetY = Math.cos(time + i * 1.5) * 2;
+
         positions[i * 3] = THREE.MathUtils.lerp(
-          positions[i * 3], 
-          targetX + offsetX, 
+          positions[i * 3],
+          targetX + offsetX,
           0.02
         );
         positions[i * 3 + 1] = THREE.MathUtils.lerp(
-          positions[i * 3 + 1], 
-          targetY + offsetY, 
+          positions[i * 3 + 1],
+          targetY + offsetY,
           0.02
         );
-        
+
         // Gentle Z movement
         positions[i * 3 + 2] = Math.sin(time + i * 0.5) * 5;
       }
@@ -204,9 +216,9 @@ const Background3D: React.FC = () => {
       {/* Floating particles for depth */}
       <group ref={particlesRef}>
         {particles.map((particle) => (
-          <Float 
-            key={particle.id} 
-            speed={particle.speed} 
+          <Float
+            key={particle.id}
+            speed={particle.speed}
             rotationIntensity={0.1}
             floatIntensity={0.3}
           >
@@ -237,7 +249,7 @@ const Background3D: React.FC = () => {
             />
           </Sphere>
         </Float>
-        
+
         <Float speed={0.3} rotationIntensity={0.05} floatIntensity={0.1}>
           <Sphere position={[-25, -15, -35]} scale={6}>
             <meshStandardMaterial

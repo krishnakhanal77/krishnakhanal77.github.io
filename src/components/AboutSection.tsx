@@ -204,7 +204,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ show3D }) => {
               </div>
               <div className="bg-gray-800 rounded-lg p-3 md:p-4 border-l-4 border-orange-400">
                 <h4 className="font-semibold text-white">
-                  MEAN Stack Developer
+                  MERN Stack Developer
                 </h4>
                 <p className="text-cyan-400">
                   ABS Soft Nepal Pvt.Ltd. • 2021 - 2022
