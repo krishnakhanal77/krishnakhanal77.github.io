@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Text, Float, Sphere } from "@react-three/drei";
 import { gsap } from "gsap";
@@ -9,9 +9,13 @@ interface FlashScreenProps {
   onComplete: () => void;
 }
 
-function AnimatedText() {
+function AnimatedText({ isMobile }: { isMobile: boolean }) {
   const textRef = useRef<THREE.Group>(null);
   const particlesRef = useRef<THREE.Group>(null);
+
+  // Use smaller font size for mobile
+  const titleSize = isMobile ? 0.6 : 0.8;
+  const subtitleSize = isMobile ? 0.25 : 0.3;
 
   useFrame((state) => {
     if (textRef.current) {
@@ -28,7 +32,7 @@ function AnimatedText() {
       <group ref={textRef}>
         <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
           <Text
-            fontSize={1.5}
+            fontSize={titleSize}
             color="#00D9FF"
             anchorX="center"
             anchorY="middle"
@@ -37,11 +41,11 @@ function AnimatedText() {
             Kri$hna Khanal
           </Text>
           <Text
-            fontSize={0.5}
+            fontSize={subtitleSize}
             color="#FF6B35"
             anchorX="center"
             anchorY="middle"
-            position={[0, -0.5, 0]}
+            position={[0, -0.3, 0]}
           >
             Frontend Engineer
           </Text>
@@ -97,6 +101,19 @@ function LoadingIndicator() {
 
 const FlashScreen: React.FC<FlashScreenProps> = ({ isLoading, onComplete }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if device is mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     // Auto-transition after loading is complete
@@ -131,7 +148,7 @@ const FlashScreen: React.FC<FlashScreenProps> = ({ isLoading, onComplete }) => {
       className="w-full h-screen flex items-center justify-center bg-gray-900 cursor-pointer"
       onClick={handleSkip}
     >
-      <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+      <Canvas camera={{ position: [0, 0, 6], fov: 75 }}>
         <ambientLight intensity={0.3} />
         <pointLight position={[10, 10, 10]} intensity={1} color="#00D9FF" />
         <pointLight
@@ -140,7 +157,7 @@ const FlashScreen: React.FC<FlashScreenProps> = ({ isLoading, onComplete }) => {
           color="#FF6B35"
         />
 
-        <AnimatedText />
+        <AnimatedText isMobile={isMobile} />
         {isLoading && <LoadingIndicator />}
       </Canvas>
 

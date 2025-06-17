@@ -221,7 +221,7 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ show3D }) => {
 
     return ReactDOM.createPortal(
       <div
-        className="fixed bg-gray-800 rounded-lg p-4 md:p-6 border border-gray-700 shadow-xl z-[9999] w-[300px] sm:w-[550px]"
+        className="fixed bg-gray-800 rounded-lg p-4 md:p-6 border border-gray-700 shadow-xl z-[9999] w-[380px] sm:w-[550px]"
         style={{
           left: `${hoverPosition.x}px`,
           top: `${hoverPosition.y}px`,
@@ -331,7 +331,10 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ show3D }) => {
               {/* All Projects List */}
               <div className="space-y-4">
                 <h3 className="text-lg md:text-xl font-semibold text-white top-0 bg-gray-900 pb-4">
-                  All Projects
+                  All Projects{" "}
+                  <span className="text-gray-400 text-sm">
+                    (Click to view more)
+                  </span>
                 </h3>
                 <div
                   className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 relative overflow-visible"

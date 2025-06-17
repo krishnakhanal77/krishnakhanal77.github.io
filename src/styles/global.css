@@ -18,7 +18,7 @@ html, body {
   height: 100%;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - desktop (8px) */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -34,6 +34,46 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #0891b2;
+}
+
+/* Mobile scrollbar - global 2px thin scrollbar for mobile */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 1.5px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(31, 41, 55, 0.5);
+    border-radius: 2px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, 0.5);
+    border-radius: 2px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 217, 255, 0.7);
+  }
+}
+
+/* Custom scrollbar class for specific elements that need thin scrollbars */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 2px !important;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5) !important;
+  border-radius: 2px !important;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 255, 0.5) !important;
+  border-radius: 2px !important;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 255, 0.7) !important;
 }
 
 /* Smooth transitions */

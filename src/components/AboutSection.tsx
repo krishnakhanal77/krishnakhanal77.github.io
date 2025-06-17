@@ -155,7 +155,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ show3D }) => {
         )}
 
         {/* Content Section */}
-        <div className="flex flex-col justify-center space-y-6 text-white">
+        <div className="flex flex-col justify-center space-y-6 text-white md:h-auto md:overflow-visible h-[80vh] overflow-y-auto pr-2 pb-4 scrollbar-thin">
           <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
               Kri$hna Khanal

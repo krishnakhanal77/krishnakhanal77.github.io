@@ -215,7 +215,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({ show3D }) => {
           )}
 
           {/* Contact Form */}
-          <div className="flex flex-col space-y-6 pb-12">
+          <div className="flex flex-col space-y-6 pb-12 md:h-auto md:overflow-visible h-[70vh] overflow-y-auto  ">
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-xl">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
@@ -294,31 +294,31 @@ const ContactSection: React.FC<ContactSectionProps> = ({ show3D }) => {
 
                   <div className="flex items-center space-x-3 text-gray-300">
                     <Phone className="w-5 h-5 text-orange-400" />
-                    <span>+1 (555) 123-4567</span>
+                    <span>+977 9867402144</span>
                   </div>
 
                   <div className="flex items-center space-x-3 text-gray-300">
                     <MapPin className="w-5 h-5 text-green-400" />
-                    <span>San Francisco, CA</span>
+                    <span>Kathmandu, Nepal</span>
                   </div>
                 </div>
 
                 {/* Social Links */}
                 <div className="flex space-x-4 pt-4">
                   <a
-                    href="#"
+                    href="https://github.com/krishnakhanal77"
                     className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     <Github className="w-5 h-5 text-white" />
                   </a>
                   <a
-                    href="#"
+                    href="https://www.linkedin.com/in/krishna-khanal-85b98021a/"
                     className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     <Linkedin className="w-5 h-5 text-cyan-400" />
                   </a>
                   <a
-                    href="#"
+                    href="https://x.com/Krishna20744"
                     className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     <Twitter className="w-5 h-5 text-blue-400" />
