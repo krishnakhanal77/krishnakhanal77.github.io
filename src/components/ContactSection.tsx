@@ -281,47 +281,58 @@ const ContactSection: React.FC<ContactSectionProps> = ({ show3D }) => {
               </form>
 
               {/* Contact Information */}
-              <div className="space-y-4 pt-8 border-t border-gray-700 mt-8">
-                <h3 className="text-xl font-semibold text-white">
-                  Contact Information
-                </h3>
+              <div className="space-y-4 pt-8 border-t border-gray-700 mt-8 flex flex-row justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold text-white">
+                    Contact Information
+                  </h3>
 
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3 text-gray-300">
-                    <Mail className="w-5 h-5 text-cyan-400" />
-                    <span>krishna.khanal@email.com</span>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 text-gray-300">
+                      <Mail className="w-5 h-5 text-cyan-400" />
+                      <span>khanalkrishna2074@gmail.com</span>
+                    </div>
+
+                    <div className="flex items-center space-x-3 text-gray-300">
+                      <Phone className="w-5 h-5 text-orange-400" />
+                      <span>+977 9867402144</span>
+                    </div>
+
+                    <div className="flex items-center space-x-3 text-gray-300">
+                      <MapPin className="w-5 h-5 text-green-400" />
+                      <span>Kathmandu, Nepal</span>
+                    </div>
                   </div>
 
-                  <div className="flex items-center space-x-3 text-gray-300">
-                    <Phone className="w-5 h-5 text-orange-400" />
-                    <span>+977 9867402144</span>
-                  </div>
-
-                  <div className="flex items-center space-x-3 text-gray-300">
-                    <MapPin className="w-5 h-5 text-green-400" />
-                    <span>Kathmandu, Nepal</span>
+                  {/* Social Links */}
+                  <div className="flex space-x-4 pt-4">
+                    <a
+                      href="https://github.com/krishnakhanal77"
+                      className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                      <Github className="w-5 h-5 text-white" />
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/krishna-khanal-85b98021a/"
+                      className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                      <Linkedin className="w-5 h-5 text-cyan-400" />
+                    </a>
+                    <a
+                      href="https://x.com/Krishna20744"
+                      className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                      <Twitter className="w-5 h-5 text-blue-400" />
+                    </a>
                   </div>
                 </div>
-
-                {/* Social Links */}
-                <div className="flex space-x-4 pt-4">
+                <div className="pt-4 self-end">
                   <a
-                    href="https://github.com/krishnakhanal77"
-                    className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                    href="/.pdf"
+                    download
+                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105"
                   >
-                    <Github className="w-5 h-5 text-white" />
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/in/krishna-khanal-85b98021a/"
-                    className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
-                  >
-                    <Linkedin className="w-5 h-5 text-cyan-400" />
-                  </a>
-                  <a
-                    href="https://x.com/Krishna20744"
-                    className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
-                  >
-                    <Twitter className="w-5 h-5 text-blue-400" />
+                    Download CV
                   </a>
                 </div>
               </div>
