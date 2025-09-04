@@ -4,6 +4,8 @@ import { Float, Text, Sphere, Box } from "@react-three/drei";
 import { gsap } from "gsap";
 import * as THREE from "three";
 import { Mail, Phone, MapPin, Github, Linkedin, Twitter } from "lucide-react";
+import emailjs from "@emailjs/browser";
+import { flushSync } from "react-dom";
 
 function ContactForm3D() {
   const formRef = useRef<THREE.Group>(null);
@@ -151,6 +153,9 @@ const ContactSection: React.FC<ContactSectionProps> = ({ show3D }) => {
     email: "",
     message: "",
   });
+  const [submitStatus, setSubmitStatus] = useState("");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -168,12 +173,68 @@ const ContactSection: React.FC<ContactSectionProps> = ({ show3D }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Handle form submission here
-  };
+    // Force synchronous update
+    flushSync(() => {
+      setIsSubmitting(true);
+      setSubmitStatus("");
+    });
 
+    try {
+      // Check if environment variables are loaded
+      const serviceKey = import.meta.env.VITE_EMAILJS_SERVICE_KEY;
+      const templateKey = import.meta.env.VITE_EMAILJS_TEMPLATE_KEY;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceKey || !templateKey || !publicKey) {
+        throw new Error(
+          "EmailJS configuration missing. Please restart the dev server and check environment variables."
+        );
+      }
+
+      // Validate form data
+      if (
+        !formData.name.trim() ||
+        !formData.email.trim() ||
+        !formData.message.trim()
+      ) {
+        throw new Error("Please fill in all required fields.");
+      }
+
+      // Send email using EmailJS
+      await emailjs.send(
+        serviceKey,
+        templateKey,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+          to_name: "Krishna Khanal",
+        },
+        publicKey
+      );
+
+      // Success case - force synchronous update
+      flushSync(() => {
+        setSubmitStatus("success");
+        setFormData({
+          name: "",
+          email: "",
+          message: "",
+        });
+        setIsSubmitting(false);
+      });
+    } catch (error: any) {
+      // Error case - force synchronous update
+      flushSync(() => {
+        setSubmitStatus("error");
+        setIsSubmitting(false);
+      });
+      console.error("Failed to send email:", error);
+    }
+  };
+  console.log(isSubmitting);
   return (
     <div
       ref={containerRef}
@@ -274,10 +335,30 @@ const ContactSection: React.FC<ContactSectionProps> = ({ show3D }) => {
 
                 <button
                   type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+                  disabled={isSubmitting}
+                  className={`w-full py-3 text-white font-semibold rounded-lg transition-all duration-300 transform ${
+                    isSubmitting
+                      ? "bg-gray-600 cursor-not-allowed"
+                      : "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 hover:scale-105"
+                  }`}
                 >
-                  Send Message
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </button>
+
+                {/* Status Messages */}
+                {submitStatus === "success" && (
+                  <div className="p-4 bg-green-900/50 border border-green-500 rounded-lg text-green-300">
+                    ✅ Message sent successfully! I'll get back to you soon.
+                  </div>
+                )}
+
+                {submitStatus === "error" && (
+                  <div className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-300">
+                    ❌ Failed to send message. Please check the browser console
+                    for details, try again, or contact me directly at
+                    khanalkrishna2074@gmail.com.
+                  </div>
+                )}
               </form>
 
               {/* Contact Information */}
