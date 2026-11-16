@@ -1,176 +1,62 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Text, Float, Sphere } from "@react-three/drei";
-import { gsap } from "gsap";
-import * as THREE from "three";
+import { motion } from "framer-motion";
+import React, { useEffect } from "react";
 
 interface FlashScreenProps {
-  isLoading: boolean;
   onComplete: () => void;
 }
 
-function AnimatedText({ isMobile }: { isMobile: boolean }) {
-  const textRef = useRef<THREE.Group>(null);
-  const particlesRef = useRef<THREE.Group>(null);
+const NAME = "Kri$hna Khanal";
+const DURATION_MS = 2200;
 
-  // Use smaller font size for mobile
-  const titleSize = isMobile ? 0.6 : 0.8;
-  const subtitleSize = isMobile ? 0.25 : 0.3;
-
-  useFrame((state) => {
-    if (textRef.current) {
-      textRef.current.rotation.y = Math.sin(state.clock.elapsedTime) * 0.1;
-    }
-    if (particlesRef.current) {
-      particlesRef.current.rotation.x = state.clock.elapsedTime * 0.2;
-      particlesRef.current.rotation.z = state.clock.elapsedTime * 0.1;
-    }
-  });
-
-  return (
-    <>
-      <group ref={textRef}>
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-          <Text
-            fontSize={titleSize}
-            color="#00D9FF"
-            anchorX="center"
-            anchorY="middle"
-            position={[0, 0.5, 0]}
-          >
-            Kri$hna Khanal
-          </Text>
-          <Text
-            fontSize={subtitleSize}
-            color="#FF6B35"
-            anchorX="center"
-            anchorY="middle"
-            position={[0, -0.3, 0]}
-          >
-            Frontend Engineer
-          </Text>
-        </Float>
-      </group>
-
-      <group ref={particlesRef}>
-        {Array.from({ length: 50 }).map((_, i) => (
-          <Float key={i} speed={1 + Math.random()} rotationIntensity={0.5}>
-            <Sphere
-              position={[
-                (Math.random() - 0.5) * 10,
-                (Math.random() - 0.5) * 10,
-                (Math.random() - 0.5) * 10,
-              ]}
-              scale={0.02 + Math.random() * 0.03}
-            >
-              <meshStandardMaterial
-                color={Math.random() > 0.5 ? "#00D9FF" : "#FF6B35"}
-                emissive={Math.random() > 0.5 ? "#00D9FF" : "#FF6B35"}
-                emissiveIntensity={0.2}
-              />
-            </Sphere>
-          </Float>
-        ))}
-      </group>
-    </>
-  );
-}
-
-function LoadingIndicator() {
-  const ringRef = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    if (ringRef.current) {
-      ringRef.current.rotation.z = state.clock.elapsedTime * 2;
-    }
-  });
-
-  return (
-    <group ref={ringRef} position={[0, -3, 0]}>
-      <mesh>
-        <torusGeometry args={[0.5, 0.05, 8, 16]} />
-        <meshStandardMaterial
-          color="#00D9FF"
-          emissive="#00D9FF"
-          emissiveIntensity={0.3}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-const FlashScreen: React.FC<FlashScreenProps> = ({ isLoading, onComplete }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
+const FlashScreen: React.FC<FlashScreenProps> = ({ onComplete }) => {
   useEffect(() => {
-    // Check if device is mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  useEffect(() => {
-    // Auto-transition after loading is complete
-    if (!isLoading) {
-      const timer = setTimeout(() => {
-        if (containerRef.current) {
-          gsap.to(containerRef.current, {
-            opacity: 0,
-            duration: 1,
-            onComplete: onComplete,
-          });
-        }
-      }, 1500); // Reduced from 2000ms to 1500ms
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading, onComplete]);
-
-  // Add click to skip functionality
-  const handleSkip = () => {
-    if (containerRef.current) {
-      gsap.to(containerRef.current, {
-        opacity: 0,
-        duration: 0.5,
-        onComplete: onComplete,
-      });
-    }
-  };
+    const timer = setTimeout(onComplete, DURATION_MS);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full h-screen flex items-center justify-center bg-gray-900 cursor-pointer"
-      onClick={handleSkip}
+    <motion.div
+      className="fixed inset-0 z-50 flex cursor-pointer flex-col items-center justify-center px-4"
+      onClick={onComplete}
+      exit={{ opacity: 0, filter: "blur(8px)" }}
+      transition={{ duration: 0.5 }}
     >
-      <Canvas camera={{ position: [0, 0, 6], fov: 75 }}>
-        <ambientLight intensity={0.3} />
-        <pointLight position={[10, 10, 10]} intensity={1} color="#00D9FF" />
-        <pointLight
-          position={[-10, -10, -10]}
-          intensity={0.5}
-          color="#FF6B35"
+      <h1 className="text-center text-4xl font-bold tracking-tight md:text-6xl">
+        {NAME.split("").map((char, i) => (
+          <motion.span
+            key={i}
+            className="inline-block"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.04 * i, duration: 0.5, ease: "easeOut" }}
+          >
+            {char === " " ? " " : char}
+          </motion.span>
+        ))}
+      </h1>
+
+      <motion.p
+        className="mt-4 text-sm uppercase tracking-[0.3em] text-gray-400 md:text-base"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7, duration: 0.6 }}
+      >
+        Full Stack Developer
+      </motion.p>
+
+      <div className="mt-10 h-px w-40 overflow-hidden bg-white/10">
+        <motion.div
+          className="h-full bg-gradient-to-r from-cyan-400 to-orange-400"
+          initial={{ width: "0%" }}
+          animate={{ width: "100%" }}
+          transition={{ duration: DURATION_MS / 1000 - 0.2, ease: "easeInOut" }}
         />
-
-        <AnimatedText isMobile={isMobile} />
-        {isLoading && <LoadingIndicator />}
-      </Canvas>
-
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-center">
-        {isLoading ? (
-          <div className="text-white text-lg">Loading Experience...</div>
-        ) : (
-          <div className="text-gray-400 text-sm">
-            Click anywhere to continue
-          </div>
-        )}
       </div>
-    </div>
+
+      <p className="absolute bottom-10 text-xs text-gray-500">
+        Click anywhere to skip
+      </p>
+    </motion.div>
   );
 };
 
