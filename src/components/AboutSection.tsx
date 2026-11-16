@@ -1,225 +1,151 @@
-import React, { useRef, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Text, Sphere, Box } from "@react-three/drei";
-import { gsap } from "gsap";
-import * as THREE from "three";
+import { motion } from "framer-motion";
+import { Code2, Database, Server, Smartphone, Wrench } from "lucide-react";
+import React from "react";
+import { fadeUp, stagger } from "./motion";
 
-function Avatar() {
-  const avatarRef = useRef<THREE.Group>(null);
-  const mousePosition = useRef({ x: 0, y: 0 });
+const skillGroups = [
+  {
+    title: "Frontend",
+    icon: Code2,
+    accent: "text-cyan-400",
+    skills: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "TanStack Query"],
+  },
+  {
+    title: "Backend",
+    icon: Server,
+    accent: "text-green-400",
+    skills: ["Node.js", "NestJS", "Express.js", "REST APIs", "TypeORM"],
+  },
+  {
+    title: "Mobile",
+    icon: Smartphone,
+    accent: "text-violet-400",
+    skills: ["React Native", "Expo", "Push Notifications", "Offline-first"],
+  },
+  {
+    title: "Databases",
+    icon: Database,
+    accent: "text-orange-400",
+    skills: ["MongoDB", "SQLite"],
+  },
+  {
+    title: "Tools",
+    icon: Wrench,
+    accent: "text-pink-400",
+    skills: ["Git", "GitHub", "Vite"],
+  },
+];
 
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      mousePosition.current = {
-        x: (event.clientX / window.innerWidth) * 2 - 1,
-        y: -(event.clientY / window.innerHeight) * 2 + 1,
-      };
-    };
+const experience = [
+  {
+    role: "Senior Frontend Developer",
+    company: "Aerawat Corp.",
+    period: "2024 – Present",
+    description:
+      "Frontend development for enterprise applications using React, Next.js, TypeScript, and modern web technologies.",
+  },
+  {
+    role: "Frontend Developer",
+    company: "Dogma International",
+    period: "2022 – 2024",
+    description:
+      "Developed responsive web applications and collaborated with design teams to create pixel-perfect UIs. Also worked on mobile applications using React Native.",
+  },
+  {
+    role: "MERN Stack Developer",
+    company: "ABS Soft Nepal Pvt. Ltd.",
+    period: "2021 – 2022",
+    description:
+      "Built full-stack web applications with MongoDB, Express, React, and Node.js, and collaborated with design teams to create pixel-perfect UIs.",
+  },
+];
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+const AboutSection: React.FC = () => (
+  <motion.div
+    className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16"
+    variants={stagger(0.05)}
+    initial="hidden"
+    animate="show"
+  >
+    {/* Intro + skills */}
+    <div className="space-y-8">
+      <motion.div variants={fadeUp} className="space-y-4">
+        <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+          <span className="gradient-text">Kri$hna Khanal</span>
+        </h1>
+        <h2 className="text-xl font-semibold text-gray-200 md:text-2xl">
+          Full Stack Developer
+        </h2>
+        <p className="max-w-xl text-base leading-relaxed text-gray-400 md:text-lg">
+          I build fast, accessible web and mobile products end to end — from
+          polished React and Next.js interfaces to scalable APIs with Node.js
+          and NestJS. Shipping SaaS, healthcare, and enterprise applications
+          since 2021.
+        </p>
+      </motion.div>
 
-  useFrame(() => {
-    if (avatarRef.current) {
-      avatarRef.current.rotation.x = THREE.MathUtils.lerp(
-        avatarRef.current.rotation.x,
-        mousePosition.current.y * 0.1,
-        0.05
-      );
-      avatarRef.current.rotation.y = THREE.MathUtils.lerp(
-        avatarRef.current.rotation.y,
-        mousePosition.current.x * 0.1,
-        0.05
-      );
-    }
-  });
-
-  return (
-    <Float speed={1} rotationIntensity={0.2} floatIntensity={0.3}>
-      <group ref={avatarRef}>
-        {/* Simple avatar representation */}
-        <Sphere position={[0, 0.5, 0]} scale={0.8}>
-          <meshStandardMaterial
-            color="#00D9FF"
-            metalness={0.3}
-            roughness={0.4}
-          />
-        </Sphere>
-        <Box position={[0, -0.5, 0]} scale={[1, 1.2, 0.6]}>
-          <meshStandardMaterial
-            color="#FF6B35"
-            metalness={0.2}
-            roughness={0.6}
-          />
-        </Box>
-
-        {/* Glowing effect */}
-        <Sphere position={[0, 0, 0]} scale={1.2}>
-          <meshStandardMaterial
-            color="#00D9FF"
-            emissive="#00D9FF"
-            emissiveIntensity={0.1}
-            transparent
-            opacity={0.1}
-          />
-        </Sphere>
-      </group>
-    </Float>
-  );
-}
-
-function SkillsVisualization() {
-  const skills = [
-    { name: "React", level: 0.9, color: "#61DAFB" },
-    { name: "TypeScript", level: 0.85, color: "#3178C6" },
-    { name: "JavaScript", level: 0.95, color: "#F7DF1E" },
-    { name: "Node.js", level: 0.9, color: "#1572B6" },
-    { name: "React Native", level: 0.8, color: "#61DAFB" },
-    { name: "MongoDB", level: 0.8, color: "#47A248" },
-  ];
-
-  return (
-    <group position={[3, 0, -1]}>
-      {skills.map((skill, index) => (
-        <Float key={skill.name} speed={1 + index * 0.2} rotationIntensity={0.1}>
-          <group position={[0, index * 0.8 - 2, 0]}>
-            <Box scale={[skill.level * 2, 0.1, 0.1]}>
-              <meshStandardMaterial
-                color={skill.color}
-                emissive={skill.color}
-                emissiveIntensity={0.2}
-              />
-            </Box>
-            <Text
-              fontSize={0.2}
-              color="#FFFFFF"
-              anchorX="left"
-              anchorY="middle"
-              position={[-1, 0.3, 0]}
+      <motion.div variants={fadeUp} className="space-y-4">
+        <h3 className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+          Skills
+        </h3>
+        <motion.div
+          className="grid gap-3 sm:grid-cols-2"
+          variants={stagger(0.15, 0.06)}
+        >
+          {skillGroups.map(({ title, icon: Icon, accent, skills }) => (
+            <motion.div
+              key={title}
+              variants={fadeUp}
+              className="card p-4"
             >
-              {skill.name}
-            </Text>
-          </group>
-        </Float>
-      ))}
-    </group>
-  );
-}
-
-interface AboutSectionProps {
-  show3D: boolean;
-}
-
-const AboutSection: React.FC<AboutSectionProps> = ({ show3D }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-      );
-    }
-  }, []);
-
-  return (
-    <div
-      ref={containerRef}
-      className="w-full min-h-screen pt-20 md:pt-32 px-4 md:px-8 overflow-y-auto"
-    >
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-        {/* 3D Avatar Section - Only show on larger screens */}
-        {show3D && (
-          <div className="hidden lg:flex items-center justify-center">
-            <div className="w-full h-96">
-              <Canvas camera={{ position: [0, 0, 4], fov: 75 }}>
-                <ambientLight intensity={0.4} />
-                <pointLight
-                  position={[5, 5, 5]}
-                  intensity={0.8}
-                  color="#00D9FF"
-                />
-                <pointLight
-                  position={[-5, -5, -5]}
-                  intensity={0.4}
-                  color="#FF6B35"
-                />
-
-                <Avatar />
-                <SkillsVisualization />
-              </Canvas>
-            </div>
-          </div>
-        )}
-
-        {/* Content Section */}
-        <div className="flex flex-col justify-center space-y-6 text-white md:h-auto md:overflow-visible h-[80vh] overflow-y-auto pr-2 pb-4 scrollbar-thin">
-          <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-              Kri$hna Khanal
-            </span>
-          </h1>
-
-          <h2 className="text-xl md:text-2xl lg:text-3xl text-orange-400 font-semibold">
-            Frontend Engineer
-          </h2>
-
-          <p className="text-base md:text-lg lg:text-xl leading-relaxed text-gray-300">
-            Passionate about creating immersive digital experiences through
-            cutting-edge web technologies. Specializing in React, Next.js, React
-            Native, TypeScript, Javascript, Node.js, and MongoDB to build
-            interactive and performant applications.
-          </p>
-
-          <div className="space-y-4">
-            <h3 className="text-lg md:text-xl font-semibold text-cyan-400">
-              Experience
-            </h3>
-            <div className="space-y-3">
-              <div className="bg-gray-800 rounded-lg p-3 md:p-4 border-l-4 border-cyan-400">
-                <h4 className="font-semibold text-white">
-                  Senior Frontend Developer
-                </h4>
-                <p className="text-orange-400">
-                  Aerawat Corp. • 2024 - Present
-                </p>
-                <p className="text-gray-300 text-sm mt-2">
-                  Frontend development for enterprise applications using React,
-                  Next.js, TypeScript, and modern web technologies.
-                </p>
+              <div className="mb-3 flex items-center gap-2">
+                <Icon className={`h-4 w-4 ${accent}`} />
+                <span className="text-sm font-semibold text-white">{title}</span>
               </div>
-
-              <div className="bg-gray-800 rounded-lg p-3 md:p-4 border-l-4 border-orange-400">
-                <h4 className="font-semibold text-white">Frontend Developer</h4>
-                <p className="text-cyan-400">
-                  Dogma International • 2022 - 2024
-                </p>
-                <p className="text-gray-300 text-sm mt-2">
-                  Developed responsive web applications and collaborated with
-                  design teams to create pixel-perfect UIs. Also worked on
-                  mobile applications using React Native.
-                </p>
+              <div className="flex flex-wrap gap-1.5">
+                {skills.map((skill) => (
+                  <span key={skill} className="chip">
+                    {skill}
+                  </span>
+                ))}
               </div>
-              <div className="bg-gray-800 rounded-lg p-3 md:p-4 border-l-4 border-orange-400">
-                <h4 className="font-semibold text-white">
-                  MERN Stack Developer
-                </h4>
-                <p className="text-cyan-400">
-                  ABS Soft Nepal Pvt.Ltd. • 2021 - 2022
-                </p>
-                <p className="text-gray-300 text-sm mt-2">
-                  Developed responsive web applications and collaborated with
-                  design teams to create pixel-perfect UIs.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
     </div>
-  );
-};
+
+    {/* Experience timeline */}
+    <motion.div variants={fadeUp} className="space-y-4">
+      <h3 className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+        Experience
+      </h3>
+      <motion.ol
+        className="relative space-y-6 border-l border-white/10 pl-6"
+        variants={stagger(0.2, 0.12)}
+      >
+        {experience.map((job, i) => (
+          <motion.li key={job.company} variants={fadeUp} className="relative">
+            <span
+              className={`absolute -left-[31px] top-1.5 h-3 w-3 rounded-full ring-4 ring-gray-950 ${
+                i === 0 ? "bg-cyan-400" : "bg-gray-600"
+              }`}
+            />
+            <div className="card p-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h4 className="font-semibold text-white">{job.role}</h4>
+                <span className="text-xs text-gray-500">{job.period}</span>
+              </div>
+              <p className="mt-0.5 text-sm text-cyan-400">{job.company}</p>
+              <p className="mt-3 text-sm leading-relaxed text-gray-400">
+                {job.description}
+              </p>
+            </div>
+          </motion.li>
+        ))}
+      </motion.ol>
+    </motion.div>
+  </motion.div>
+);
 
 export default AboutSection;

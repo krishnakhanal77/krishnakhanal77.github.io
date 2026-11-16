@@ -1,96 +1,66 @@
-import { Canvas } from "@react-three/fiber";
-import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 import AboutSection from "./components/AboutSection";
-import Background3D from "./components/Background3D";
+import Background from "./components/Background";
 import ContactSection from "./components/ContactSection";
 import FlashScreen from "./components/FlashScreen";
-import LeftAnimations from "./components/LeftAnimations";
 import Navigation from "./components/Navigation";
 import ProjectsSection from "./components/ProjectsSection";
 import "./styles/global.css";
 
-type Section = "flash" | "about" | "projects" | "contact";
+export type Section = "about" | "projects" | "contact";
+
+const sections: Record<Section, React.ReactNode> = {
+  about: <AboutSection />,
+  projects: <ProjectsSection />,
+  contact: <ContactSection />,
+};
 
 function App() {
-  const [currentSection, setCurrentSection] = useState<Section>("flash");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Handle mobile detection only for 3D/Canvas optimizations
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  const [showIntro, setShowIntro] = useState(true);
+  const [currentSection, setCurrentSection] = useState<Section>("about");
 
   const handleSectionChange = (section: Section) => {
     setCurrentSection(section);
-  };
-
-  const handleFlashComplete = () => {
-    setCurrentSection("about");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <div className="w-full min-h-screen overflow-x-hidden bg-gray-900 relative">
-      {/* Enhanced 3D Background - only show when not on flash screen and not on mobile */}
-      {currentSection !== "flash" && !isMobile && (
-        <div className="fixed inset-0 z-0">
-          <Canvas
-            camera={{ position: [0, 0, 5], fov: 75 }}
-            gl={{ antialias: true, alpha: true }}
+    <div className="relative min-h-screen w-full overflow-x-hidden text-white">
+      <Background />
+
+      <AnimatePresence mode="wait">
+        {showIntro ? (
+          <FlashScreen key="intro" onComplete={() => setShowIntro(false)} />
+        ) : (
+          <motion.div
+            key="app"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex min-h-screen flex-col"
           >
-            <Background3D />
-            <LeftAnimations />
-          </Canvas>
-        </div>
-      )}
-
-      {/* Mobile Background - simplified gradient */}
-      {currentSection !== "flash" && isMobile && (
-        <div className="fixed inset-0 z-0 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900" />
-      )}
-
-      {/* Main Content */}
-      <div className="relative z-10">
-        {currentSection === "flash" && (
-          <FlashScreen isLoading={isLoading} onComplete={handleFlashComplete} />
-        )}
-
-        {currentSection !== "flash" && (
-          <div className="flex flex-col min-h-screen">
             <Navigation
               currentSection={currentSection}
               onSectionChange={handleSectionChange}
-              isMobile={isMobile}
             />
 
-            <main className="flex-1 w-full">
-              {currentSection === "about" && (
-                <AboutSection show3D={!isMobile} />
-              )}
-              {currentSection === "projects" && (
-                <ProjectsSection show3D={!isMobile} />
-              )}
-              {currentSection === "contact" && (
-                <ContactSection show3D={!isMobile} />
-              )}
+            <main className="flex-1 w-full px-4 pb-16 pt-24 md:px-8 md:pt-32">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSection}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                >
+                  {sections[currentSection]}
+                </motion.div>
+              </AnimatePresence>
             </main>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   );
 }
